@@ -20,11 +20,13 @@ import androidx.fragment.app.FragmentActivity
 import com.example.android.hilt.R
 import com.example.android.hilt.ui.ButtonsFragment
 import com.example.android.hilt.ui.LogsFragment
+import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
 /**
  * Navigator implementation.
  */
+@ActivityScoped
 class AppNavigatorImpl @Inject constructor(
     private val activity: FragmentActivity
 ) : AppNavigator {
