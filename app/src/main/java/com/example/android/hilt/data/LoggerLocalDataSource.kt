@@ -16,10 +16,10 @@
 
 package com.example.android.hilt.data
 
-import android.os.Handler
-import android.os.Looper
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,16 +28,12 @@ import javax.inject.Singleton
  */
 @Singleton
 class LoggerLocalDataSource @Inject constructor(
-    private val logDao: LogDao
+    private val logDao: LogDao,
+    private val coroutineScope: CoroutineScope
 ) : LoggerDataSource {
 
-    private val executorService: ExecutorService = Executors.newFixedThreadPool(4)
-    private val mainThreadHandler by lazy {
-        Handler(Looper.getMainLooper())
-    }
-
     override fun addLog(msg: String) {
-        executorService.execute {
+        coroutineScope.launch {
             logDao.insertAll(
                 Log(
                     msg,
@@ -48,14 +44,16 @@ class LoggerLocalDataSource @Inject constructor(
     }
 
     override fun getAllLogs(callback: (List<Log>) -> Unit) {
-        executorService.execute {
+        coroutineScope.launch {
             val logs = logDao.getAll()
-            mainThreadHandler.post { callback(logs) }
+            withContext(Dispatchers.Main) {
+                callback(logs)
+            }
         }
     }
 
     override fun removeLogs() {
-        executorService.execute {
+        coroutineScope.launch {
             logDao.nukeTable()
         }
     }

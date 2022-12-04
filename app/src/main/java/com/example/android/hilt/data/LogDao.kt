@@ -28,13 +28,13 @@ import androidx.room.Query
 interface LogDao {
 
     @Query("SELECT * FROM logs ORDER BY id DESC")
-    fun getAll(): List<Log>
+    suspend fun getAll(): List<Log>
 
     @Insert
-    fun insertAll(vararg logs: Log)
+    suspend fun insertAll(vararg logs: Log)
 
     @Query("DELETE FROM logs")
-    fun nukeTable()
+    suspend fun nukeTable()
 
     @Query("SELECT * FROM logs ORDER BY id DESC")
     fun selectAllLogsCursor(): Cursor

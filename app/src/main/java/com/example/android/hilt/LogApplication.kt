@@ -18,9 +18,12 @@ package com.example.android.hilt
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import javax.inject.Inject
 
 @HiltAndroidApp
 class LogApplication : Application() {
+    @Inject lateinit var coroutineScope: CoroutineScope
 
     override fun onCreate() {
         super.onCreate()

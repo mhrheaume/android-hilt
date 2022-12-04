@@ -38,6 +38,7 @@ class LogsContentProvider : ContentProvider() {
         } else {
             logDao.selectLogById(ContentUris.parseId(uri))
         }
+
         cursor.setNotificationUri(appContext.contentResolver, uri)
         return cursor
     }
