@@ -34,12 +34,7 @@ class LoggerLocalDataSource @Inject constructor(
 
     override fun addLog(msg: String) {
         coroutineScope.launch {
-            logDao.insertAll(
-                Log(
-                    msg,
-                    System.currentTimeMillis()
-                )
-            )
+            logDao.insertAll(Log(msg, System.currentTimeMillis()))
         }
     }
 

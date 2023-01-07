@@ -23,13 +23,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.hilt.R
 import com.example.android.hilt.data.Log
-import com.example.android.hilt.data.LoggerDataSource
-import com.example.android.hilt.di.DatabaseLogger
 import com.example.android.hilt.util.DateFormatter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -37,10 +40,8 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class LogsFragment : Fragment() {
+    private val viewModel: LogsViewModel by viewModels()
 
-    @DatabaseLogger
-    @Inject
-    lateinit var logger: LoggerDataSource
     @Inject
     lateinit var dateFormatter: DateFormatter
 
@@ -60,15 +61,15 @@ class LogsFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        logger.getAllLogs { logs ->
-            recyclerView.adapter =
-                LogsViewAdapter(
-                    logs,
-                    dateFormatter
-                )
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.logs.collect {
+                   recyclerView.adapter = LogsViewAdapter(it, dateFormatter)
+                }
+            }
         }
     }
 }

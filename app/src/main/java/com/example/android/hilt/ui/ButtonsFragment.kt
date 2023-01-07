@@ -22,9 +22,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.android.hilt.R
-import com.example.android.hilt.data.LoggerDataSource
-import com.example.android.hilt.di.DatabaseLogger
 import com.example.android.hilt.navigator.AppNavigator
 import com.example.android.hilt.navigator.Screens
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,10 +34,8 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class ButtonsFragment : Fragment() {
+    private val viewModel: ButtonsViewModel by viewModels()
 
-    @DatabaseLogger
-    @Inject
-    lateinit var logger: LoggerDataSource
     @Inject
     lateinit var navigator: AppNavigator
 
@@ -52,15 +49,15 @@ class ButtonsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view.findViewById<Button>(R.id.button1).setOnClickListener {
-            logger.addLog("Interaction with 'Button 1'")
+            viewModel.handleButtonClick(1)
         }
 
         view.findViewById<Button>(R.id.button2).setOnClickListener {
-            logger.addLog("Interaction with 'Button 2'")
+            viewModel.handleButtonClick(2)
         }
 
         view.findViewById<Button>(R.id.button3).setOnClickListener {
-            logger.addLog("Interaction with 'Button 3'")
+            viewModel.handleButtonClick(3)
         }
 
         view.findViewById<Button>(R.id.all_logs).setOnClickListener {
@@ -68,7 +65,7 @@ class ButtonsFragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.delete_logs).setOnClickListener {
-            logger.removeLogs()
+            viewModel.handleDeleteLogs()
         }
     }
 }
