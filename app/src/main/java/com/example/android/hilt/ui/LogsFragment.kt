@@ -16,12 +16,10 @@
 
 package com.example.android.hilt.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -29,8 +27,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.hilt.R
-import com.example.android.hilt.data.Log
-import com.example.android.hilt.util.DateFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,7 +39,7 @@ class LogsFragment : Fragment() {
     private val viewModel: LogsViewModel by viewModels()
 
     @Inject
-    lateinit var dateFormatter: DateFormatter
+    lateinit var adapterFactory: LogsViewAdapter.Factory
 
     private lateinit var recyclerView: RecyclerView
 
@@ -67,37 +63,9 @@ class LogsFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.logs.collect {
-                   recyclerView.adapter = LogsViewAdapter(it, dateFormatter)
+                   recyclerView.adapter = adapterFactory.create(it)
                 }
             }
         }
-    }
-}
-
-/**
- * RecyclerView adapter for the logs list.
- */
-private class LogsViewAdapter(
-    private val logsDataSet: List<Log>,
-    private val daterFormatter: DateFormatter
-) : RecyclerView.Adapter<LogsViewAdapter.LogsViewHolder>() {
-
-    class LogsViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogsViewHolder {
-        return LogsViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.text_row_item, parent, false) as TextView
-        )
-    }
-
-    override fun getItemCount(): Int {
-        return logsDataSet.size
-    }
-
-    @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(holder: LogsViewHolder, position: Int) {
-        val log = logsDataSet[position]
-        holder.textView.text = "${log.msg}\n\t${daterFormatter.formatDate(log.timestamp)}"
     }
 }
