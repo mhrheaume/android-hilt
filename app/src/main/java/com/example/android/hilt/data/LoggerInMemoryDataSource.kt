@@ -12,11 +12,11 @@ class LoggerInMemoryDataSource @Inject constructor() : LoggerDataSource {
         logs.addFirst(Log(msg, System.currentTimeMillis()))
     }
 
-    override fun getAllLogs(callback: (List<Log>) -> Unit) {
-        callback(logs)
-    }
-
     override fun removeLogs() {
         logs.clear()
+    }
+
+    override suspend fun getAllLogs(): List<Log> {
+        return logs
     }
 }

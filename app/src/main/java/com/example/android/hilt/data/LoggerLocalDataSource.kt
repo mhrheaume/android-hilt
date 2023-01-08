@@ -17,9 +17,7 @@
 package com.example.android.hilt.data
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -38,18 +36,13 @@ class LoggerLocalDataSource @Inject constructor(
         }
     }
 
-    override fun getAllLogs(callback: (List<Log>) -> Unit) {
-        coroutineScope.launch {
-            val logs = logDao.getAll()
-            withContext(Dispatchers.Main) {
-                callback(logs)
-            }
-        }
-    }
-
     override fun removeLogs() {
         coroutineScope.launch {
             logDao.nukeTable()
         }
+    }
+
+    override suspend fun getAllLogs(): List<Log> {
+        return logDao.getAll()
     }
 }
